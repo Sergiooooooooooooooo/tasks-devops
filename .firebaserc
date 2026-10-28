@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "tasks-dev-eb869",
+    "dev": "tasks-dev-eb869",
+    "qa": "tasks-qa",
+    "prod": "tasks-prod-12ea4"
+  }
+}

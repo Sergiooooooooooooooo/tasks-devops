@@ -1,0 +1,49 @@
+:root {
+  --bg: #e9eef0;
+  --ink: #172b33;
+  --muted: #55696f;
+  --line: #b8c7cc;
+  --card: #f7fafa;
+  --env: #5b6b70;
+}
+.page[data-env="DEV"] { --env: #b26b00; }
+.page[data-env="QA"]  { --env: #5f45b0; }
+.page[data-env="PDN"] { --env: #0e7c66; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+}
+.envband {
+  background: var(--env);
+  color: #fff;
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
+}
+main { max-width: 38rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+h1 { font-family: Georgia, "Times New Roman", serif; font-size: 2.6rem; margin: 0 0 0.25rem; }
+.count { color: var(--muted); margin: 0 0 1.75rem; }
+label[for="nueva"] { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+.row { display: flex; gap: 0.5rem; }
+#nueva {
+  flex: 1; min-width: 0; padding: 0.65rem 0.8rem; font: inherit;
+  border: 1.5px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink);
+}
+button {
+  font: inherit; font-weight: 600; cursor: pointer; border: 0; border-radius: 6px;
+  padding: 0.65rem 1rem; background: var(--env); color: #fff;
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.link { background: none; color: var(--muted); padding: 0.25rem 0.4rem; text-decoration: underline; font-weight: 400; }
+:focus-visible { outline: 3px solid var(--env); outline-offset: 2px; }
+.error { color: #a12626; margin: 0.75rem 0 0; }
+ul { list-style: none; padding: 0; margin: 1.75rem 0 0; border-top: 1.5px solid var(--line); }
+li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); }
+li label { display: flex; align-items: center; gap: 0.7rem; cursor: pointer; }
+li input { width: 1.1rem; height: 1.1rem; accent-color: var(--env); }
+li.done span { text-decoration: line-through; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { button { transition: filter 0.15s; } button:hover { filter: brightness(1.1); } }

@@ -1,0 +1,57 @@
+name: Pipeline DEV, QA y PDN
+
+on:
+  push:
+    branches: [develop, qa, main]
+
+jobs:
+  # 1) Instala y prueba. Si algo falla, el pipeline se detiene aquí.
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --run
+
+  # 2) Construye y despliega al ambiente que corresponde a la rama:
+  #    develop -> dev | qa -> qa | main -> prod (con aprobación manual).
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'qa' && 'qa' || 'dev' }}
+    env:
+      VITE_APP_ENV: ${{ vars.APP_LABEL }}
+      VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+      VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+      VITE_FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+      VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      - name: Desplegar Hosting y reglas de Firestore
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$SA_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          npx firebase-tools deploy --only hosting,firestore:rules --project "${{ vars.FIREBASE_PROJECT_ID }}" --non-interactive
+          rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Prueba de humo
+        run: bash scripts/smoke-test.sh "https://${{ vars.FIREBASE_PROJECT_ID }}.web.app"
+
+      - name: Registrar versión desplegada
+        run: |
+          echo "### Despliegue ${{ vars.APP_LABEL }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- URL: https://${{ vars.FIREBASE_PROJECT_ID }}.web.app" >> "$GITHUB_STEP_SUMMARY"
