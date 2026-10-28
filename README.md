@@ -2,7 +2,7 @@
 
 Electiva: Laboratorio DevOps · Modalidad: proyecto propio
 
-**Integrantes:** Laura Juliana Cárdenas – Edgar David Pérez – Cristina Camilo Osorio – Sergio Cardona Buitrago
+**Integrantes:** Laura Juliana Cárdenas – Edgar David Pérez – Cristian Camilo Osorio – Sergio Cardona Buitrago
 
 Aplicación de lista de tareas (React + Vite) con persistencia en Cloud Firestore, desplegada en **tres ambientes** (DEV, QA y PDN). Cada ambiente vive en su propio proyecto de Firebase y se publica con un pipeline de GitHub Actions.
 
